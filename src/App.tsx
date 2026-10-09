@@ -16,11 +16,12 @@ export interface QRConfig {
   cornersDotColor: string;
   image: string | null;
   imageSize: number;
+  errorCorrection: 'L' | 'M' | 'Q' | 'H';
 }
 
 export default function App() {
   const [config, setConfig] = useState<QRConfig>({
-    value: 'https://github.com/p24user23-dot/qr-code-gen',
+    value: 'https://github.com/xand0dev/qr-code-gen',
     size: 300,
     margin: 10,
     bgColor: '#ffffff',
@@ -32,9 +33,10 @@ export default function App() {
     cornersDotColor: '#000000',
     image: null,
     imageSize: 0.4,
+    errorCorrection: 'Q',
   });
 
-  const updateConfig = (field: keyof QRConfig, val: any) => {
+  const updateConfig = <K extends keyof QRConfig>(field: K, val: QRConfig[K]) => {
     setConfig((prev) => ({ ...prev, [field]: val }));
   };
 

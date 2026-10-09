@@ -1,6 +1,9 @@
 import { useEffect, useRef } from 'react';
 import QRCodeStyling from 'qr-code-styling';
 import type { QRConfig } from '../App';
+import { toQrOptions } from '../lib/qrOptions';
+import { downloadName } from '../lib/downloadName';
+import { contrastRatio } from '../lib/contrast';
 
 interface QrDisplayProps {
   config: QRConfig;
@@ -28,41 +31,15 @@ export function QrDisplay({ config }: QrDisplayProps) {
 
   // Оновлюємо налаштування при будь-якій зміні config
   useEffect(() => {
-    qrCode.current.update({
-      width: config.size,
-      height: config.size,
-      data: config.value || ' ',
-      margin: config.margin,
-      backgroundOptions: {
-        color: config.bgColor,
-      },
-      // === ОСЬ ЦЬОГО БЛОКУ НЕ ВИСТАЧАЛО ===
-      dotsOptions: {
-        color: config.dotsColor,
-        type: config.dotsType,
-      },
-      cornersSquareOptions: {
-        color: config.cornersSquareColor,
-        type: config.cornersSquareType,
-      },
-      cornersDotOptions: {
-        color: config.cornersDotColor,
-        type: config.cornersDotType,
-      },
-      // ===================================
-      image: config.image || undefined,
-      imageOptions: {
-        crossOrigin: 'anonymous',
-        margin: 5,
-        imageSize: config.imageSize,
-      },
-    });
+    qrCode.current.update(toQrOptions(config));
   }, [config]);
 
   // Вбудовані методи завантаження з бібліотеки
   const handleDownload = (ext: 'png' | 'svg') => {
-    qrCode.current.download({ extension: ext, name: `qr-code-monkey-clone-${Date.now()}` });
+    qrCode.current.download({ extension: ext, name: downloadName(new Date()) });
   };
+
+  const isDisabled = !config.value.trim();
 
   const btnStyle = {
     padding: '0.8rem 1.5rem',
@@ -71,7 +48,8 @@ export function QrDisplay({ config }: QrDisplayProps) {
     color: '#fff',
     border: 'none',
     borderRadius: '8px',
-    cursor: 'pointer',
+    cursor: isDisabled ? 'not-allowed' : 'pointer',
+    opacity: isDisabled ? 0.5 : 1,
     boxShadow: '0 4px 6px rgba(0,0,0,0.3)',
   };
 
@@ -89,21 +67,32 @@ export function QrDisplay({ config }: QrDisplayProps) {
         }}
       />
 
-      <div style={{ display: 'flex', gap: '1rem' }}>
-        <button
-          onClick={() => handleDownload('png')}
-          style={{ ...btnStyle, backgroundColor: '#4CAF50' }}
-        >
-          Завантажити PNG
-        </button>
-        
-        <button
-          onClick={() => handleDownload('svg')}
-          style={{ ...btnStyle, backgroundColor: '#2196F3' }}
-        >
-          Завантажити SVG
-        </button>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
+        {isDisabled && <div style={{ color: '#d32f2f', fontSize: '0.9rem' }}>Введіть текст або URL</div>}
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <button
+            disabled={isDisabled}
+            onClick={() => handleDownload('png')}
+            style={{ ...btnStyle, backgroundColor: '#4CAF50' }}
+          >
+            Завантажити PNG
+          </button>
+          
+          <button
+            disabled={isDisabled}
+            onClick={() => handleDownload('svg')}
+            style={{ ...btnStyle, backgroundColor: '#2196F3' }}
+          >
+            Завантажити SVG
+          </button>
+        </div>
       </div>
+
+      {contrastRatio(config.dotsColor, config.bgColor) < 3 && (
+        <div style={{ color: '#ffb300', fontSize: '0.9rem' }}>
+          Низький контраст — QR може не скануватися
+        </div>
+      )}
     </div>
   );
 }
