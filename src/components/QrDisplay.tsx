@@ -39,6 +39,8 @@ export function QrDisplay({ config }: QrDisplayProps) {
     qrCode.current.download({ extension: ext, name: downloadName(new Date()) });
   };
 
+  const isDisabled = !config.value.trim();
+
   const btnStyle = {
     padding: '0.8rem 1.5rem',
     fontSize: '1rem',
@@ -46,7 +48,8 @@ export function QrDisplay({ config }: QrDisplayProps) {
     color: '#fff',
     border: 'none',
     borderRadius: '8px',
-    cursor: 'pointer',
+    cursor: isDisabled ? 'not-allowed' : 'pointer',
+    opacity: isDisabled ? 0.5 : 1,
     boxShadow: '0 4px 6px rgba(0,0,0,0.3)',
   };
 
@@ -64,20 +67,25 @@ export function QrDisplay({ config }: QrDisplayProps) {
         }}
       />
 
-      <div style={{ display: 'flex', gap: '1rem' }}>
-        <button
-          onClick={() => handleDownload('png')}
-          style={{ ...btnStyle, backgroundColor: '#4CAF50' }}
-        >
-          Завантажити PNG
-        </button>
-        
-        <button
-          onClick={() => handleDownload('svg')}
-          style={{ ...btnStyle, backgroundColor: '#2196F3' }}
-        >
-          Завантажити SVG
-        </button>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
+        {isDisabled && <div style={{ color: '#d32f2f', fontSize: '0.9rem' }}>Введіть текст або URL</div>}
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <button
+            disabled={isDisabled}
+            onClick={() => handleDownload('png')}
+            style={{ ...btnStyle, backgroundColor: '#4CAF50' }}
+          >
+            Завантажити PNG
+          </button>
+          
+          <button
+            disabled={isDisabled}
+            onClick={() => handleDownload('svg')}
+            style={{ ...btnStyle, backgroundColor: '#2196F3' }}
+          >
+            Завантажити SVG
+          </button>
+        </div>
       </div>
 
       {contrastRatio(config.dotsColor, config.bgColor) < 3 && (
