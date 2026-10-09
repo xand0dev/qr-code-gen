@@ -152,8 +152,8 @@ export function InputForm({ config, onChange }: InputFormProps) {
             <button 
               onClick={() => {
                 onChange('image', null);
-                // @ts-expect-error
-                document.querySelector('input[type="file"]').value = '';
+                const fileInput = document.querySelector<HTMLInputElement>('input[type="file"]');
+                if (fileInput) fileInput.value = '';
               }}
               style={{ padding: '0.8rem', background: '#d32f2f', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
             >
