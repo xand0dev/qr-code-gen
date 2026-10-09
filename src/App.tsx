@@ -34,7 +34,7 @@ export default function App() {
     imageSize: 0.4,
   });
 
-  const updateConfig = (field: keyof QRConfig, val: any) => {
+  const updateConfig = <K extends keyof QRConfig>(field: K, val: QRConfig[K]) => {
     setConfig((prev) => ({ ...prev, [field]: val }));
   };
 

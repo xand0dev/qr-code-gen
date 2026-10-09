@@ -4,7 +4,7 @@ import type { QRConfig } from '../App';
 
 interface InputFormProps {
   config: QRConfig;
-  onChange: (field: keyof QRConfig, val: any) => void;
+  onChange: <K extends keyof QRConfig>(field: K, val: QRConfig[K]) => void;
 }
 
 // Внутрішній компонент для секцій акордеону
