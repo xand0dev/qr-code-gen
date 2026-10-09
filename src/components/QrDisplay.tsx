@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import QRCodeStyling from 'qr-code-styling';
 import type { QRConfig } from '../App';
 import { toQrOptions } from '../lib/qrOptions';
+import { downloadName } from '../lib/downloadName';
 
 interface QrDisplayProps {
   config: QRConfig;
@@ -34,7 +35,7 @@ export function QrDisplay({ config }: QrDisplayProps) {
 
   // Вбудовані методи завантаження з бібліотеки
   const handleDownload = (ext: 'png' | 'svg') => {
-    qrCode.current.download({ extension: ext, name: `qr-code-monkey-clone-${Date.now()}` });
+    qrCode.current.download({ extension: ext, name: downloadName(new Date()) });
   };
 
   const btnStyle = {
