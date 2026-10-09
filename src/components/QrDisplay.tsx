@@ -1,10 +1,12 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import QRCodeStyling from 'qr-code-styling';
 import type { QRConfig } from '../App';
 import { toQrOptions } from '../lib/qrOptions';
 import { downloadName } from '../lib/downloadName';
 import { contrastRatio } from '../lib/contrast';
 import { assessScanSafety } from '../lib/scanSafety';
+import { resolveExport } from '../lib/exportOptions';
+import type { ExportFormat } from '../lib/exportOptions';
 
 interface QrDisplayProps {
   config: QRConfig;
@@ -36,8 +38,47 @@ export function QrDisplay({ config }: QrDisplayProps) {
   }, [config]);
 
   // Вбудовані методи завантаження з бібліотеки
-  const handleDownload = (ext: 'png' | 'svg') => {
-    qrCode.current.download({ extension: ext, name: downloadName(new Date()) });
+  const [format, setFormat] = useState<ExportFormat>('png');
+  const [scale, setScale] = useState(2);
+  const [transparent, setTransparent] = useState(false);
+  const [copyMsg, setCopyMsg] = useState<string | null>(null);
+
+  const exportOpts = resolveExport({ format, scale, transparent, size: config.size });
+
+  const handleDownload = () => {
+    const { extension, width, height, transparent: finalTransparent } = exportOpts;
+    const type = extension === 'svg' ? 'svg' : 'canvas';
+    new QRCodeStyling({
+      ...toQrOptions(config),
+      type,
+      width,
+      height,
+      backgroundOptions: { color: finalTransparent ? 'transparent' : config.bgColor },
+    }).download({ name: downloadName(new Date()), extension });
+  };
+
+  const handleCopyPng = async () => {
+    const opts = resolveExport({ format: 'png', scale, transparent, size: config.size });
+    const { width, height, transparent: finalTransparent } = opts;
+    const qr = new QRCodeStyling({
+      ...toQrOptions(config),
+      type: 'canvas',
+      width,
+      height,
+      backgroundOptions: { color: finalTransparent ? 'transparent' : config.bgColor },
+    });
+    try {
+      const blob = await qr.getRawData('png');
+      if (blob) {
+        await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob as Blob })]);
+        setCopyMsg('Скопійовано');
+      } else {
+        setCopyMsg('Не вдалося скопіювати');
+      }
+    } catch {
+      setCopyMsg('Не вдалося скопіювати');
+    }
+    setTimeout(() => setCopyMsg(null), 2000);
   };
 
   const isDisabled = !config.value.trim();
@@ -78,23 +119,36 @@ export function QrDisplay({ config }: QrDisplayProps) {
 
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
         {isDisabled && <div style={{ color: '#d32f2f', fontSize: '0.9rem' }}>Введіть текст або URL</div>}
-        <div style={{ display: 'flex', gap: '1rem' }}>
-          <button
-            disabled={isDisabled}
-            onClick={() => handleDownload('png')}
-            style={{ ...btnStyle, backgroundColor: '#4CAF50' }}
-          >
-            Завантажити PNG
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', alignItems: 'center', justifyContent: 'center' }}>
+          <select disabled={isDisabled} value={format} onChange={e => setFormat(e.target.value as ExportFormat)} style={{ padding: '0.5rem' }}>
+            <option value="png">PNG</option>
+            <option value="jpeg">JPEG</option>
+            <option value="webp">WEBP</option>
+            <option value="svg">SVG</option>
+          </select>
+          <select disabled={isDisabled} value={scale} onChange={e => setScale(Number(e.target.value))} style={{ padding: '0.5rem' }}>
+            <option value={1}>1×</option>
+            <option value={2}>2×</option>
+            <option value={3}>3×</option>
+            <option value={4}>4×</option>
+          </select>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+            <input type="checkbox" disabled={isDisabled} checked={transparent} onChange={e => setTransparent(e.target.checked)} />
+            Прозорий фон
+          </label>
+          <button disabled={isDisabled} onClick={handleDownload} style={{ ...btnStyle, backgroundColor: '#4CAF50' }}>
+            Завантажити
           </button>
-          
-          <button
-            disabled={isDisabled}
-            onClick={() => handleDownload('svg')}
-            style={{ ...btnStyle, backgroundColor: '#2196F3' }}
-          >
-            Завантажити SVG
+          <button disabled={isDisabled} onClick={handleCopyPng} style={{ ...btnStyle, backgroundColor: '#2196F3' }}>
+            Копіювати PNG
           </button>
         </div>
+        {copyMsg && <div style={{ fontSize: '0.85rem', color: '#333' }}>{copyMsg}</div>}
+        {exportOpts.notes.length > 0 && (
+          <div style={{ fontSize: '0.8rem', color: '#666' }}>
+            {exportOpts.notes.join(', ')}
+          </div>
+        )}
       </div>
 
       <div style={{ 
