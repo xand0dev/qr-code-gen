@@ -3,6 +3,7 @@ import QRCodeStyling from 'qr-code-styling';
 import type { QRConfig } from '../App';
 import { toQrOptions } from '../lib/qrOptions';
 import { downloadName } from '../lib/downloadName';
+import { contrastRatio } from '../lib/contrast';
 
 interface QrDisplayProps {
   config: QRConfig;
@@ -78,6 +79,12 @@ export function QrDisplay({ config }: QrDisplayProps) {
           Завантажити SVG
         </button>
       </div>
+
+      {contrastRatio(config.dotsColor, config.bgColor) < 3 && (
+        <div style={{ color: '#ffb300', fontSize: '0.9rem' }}>
+          Низький контраст — QR може не скануватися
+        </div>
+      )}
     </div>
   );
 }
