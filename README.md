@@ -2,7 +2,7 @@
 
 Сучасний, швидкий та повністю клієнтський генератор QR-кодів, натхненний функціоналом QRCode Monkey. Побудований на React + TypeScript, працює без бекенду, рендерить високоякісні коди безпосередньо у браузері.
 
-🌍 **[Live Demo (GitHub Pages)](https://p24user23-dot.github.io/qr-code-gen/)**
+🌍 **[Live Demo (GitHub Pages)](https://xand0dev.github.io/qr-code-gen/)**
 
 ---
 
@@ -37,7 +37,7 @@
 1. Клонуйте репозиторій:
 
 ```bash
-git clone [https://github.com/p24user23-dot/qr-code-gen.git](https://github.com/p24user23-dot/qr-code-gen.git)
+git clone https://github.com/xand0dev/qr-code-gen.git
 cd qr-code-gen
 ```
 
