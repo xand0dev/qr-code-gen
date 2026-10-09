@@ -8,15 +8,15 @@ interface InputFormProps {
 }
 
 // Внутрішній компонент для секцій акордеону
-const AccordionSection = ({ 
-  title, 
-  isOpen, 
-  onClick, 
-  children 
-}: { 
-  title: string; 
-  isOpen: boolean; 
-  onClick: () => void; 
+const AccordionSection = ({
+  title,
+  isOpen,
+  onClick,
+  children
+}: {
+  title: string;
+  isOpen: boolean;
+  onClick: () => void;
   children: ReactNode;
 }) => (
   <div style={{ backgroundColor: '#2a2a2a', borderRadius: '8px', overflow: 'hidden' }}>
@@ -50,8 +50,33 @@ const AccordionSection = ({
   </div>
 );
 
+const Select = ({ config, onChange, label, field, options }: { config: QRConfig, onChange: (field: keyof QRConfig, val: any) => void, label: string, field: keyof QRConfig, options: string[] }) => (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
+    <label style={{ fontSize: '0.9rem', color: '#aaa' }}>{label}</label>
+    <select
+      value={config[field] as string}
+      onChange={(e) => onChange(field, e.target.value)}
+      style={{ padding: '0.8rem', borderRadius: '6px', border: '1px solid #444', backgroundColor: '#1e1e1e', color: '#fff', cursor: 'pointer' }}
+    >
+      {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+    </select>
+  </div>
+);
+
+const ColorPicker = ({ config, onChange, label, field }: { config: QRConfig, onChange: (field: keyof QRConfig, val: any) => void, label: string, field: keyof QRConfig }) => (
+   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
+    <label style={{ fontSize: '0.9rem', color: '#aaa' }}>{label}</label>
+    <input
+      type="color"
+      value={config[field] as string}
+      onChange={(e) => onChange(field, e.target.value)}
+      style={{ width: '100%', height: '40px', cursor: 'pointer' }}
+    />
+  </div>
+);
+
 export function InputForm({ config, onChange }: InputFormProps) {
-  // Стан для контролю відкритої секції (за замовчуванням відкрита перша)
+  // Стан для контролю відкритої секції (за замовчиванням відкрита перша)
   const [openSection, setOpenSection] = useState<string>('data');
 
   const toggleSection = (section: string) => {
@@ -66,32 +91,6 @@ export function InputForm({ config, onChange }: InputFormProps) {
       reader.readAsDataURL(file);
     }
   };
-
-  // Помічники рендеру
-  const Select = ({ label, field, options }: { label: string, field: keyof QRConfig, options: string[] }) => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
-      <label style={{ fontSize: '0.9rem', color: '#aaa' }}>{label}</label>
-      <select 
-        value={config[field] as string} 
-        onChange={(e) => onChange(field, e.target.value)}
-        style={{ padding: '0.8rem', borderRadius: '6px', border: '1px solid #444', backgroundColor: '#1e1e1e', color: '#fff', cursor: 'pointer' }}
-      >
-        {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-      </select>
-    </div>
-  );
-
-  const ColorPicker = ({ label, field }: { label: string, field: keyof QRConfig }) => (
-     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
-      <label style={{ fontSize: '0.9rem', color: '#aaa' }}>{label}</label>
-      <input
-        type="color"
-        value={config[field] as string}
-        onChange={(e) => onChange(field, e.target.value)}
-        style={{ width: '100%', height: '40px', cursor: 'pointer' }}
-      />
-    </div>
-  );
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxHeight: '75vh', overflowY: 'auto', paddingRight: '0.5rem' }}>
@@ -126,21 +125,21 @@ export function InputForm({ config, onChange }: InputFormProps) {
       {/* 2. Стилізація тіла */}
       <AccordionSection title="Стиль QR-коду" isOpen={openSection === 'body'} onClick={() => toggleSection('body')}>
         <div style={{ display: 'flex', gap: '1rem' }}>
-          <Select label="Форма точок" field="dotsType" options={['square', 'dots', 'rounded', 'extra-rounded', 'classy', 'classy-rounded']} />
-          <ColorPicker label="Колір точок" field="dotsColor" />
+          <Select config={config} onChange={onChange} label="Форма точок" field="dotsType" options={['square', 'dots', 'rounded', 'extra-rounded', 'classy', 'classy-rounded']} />
+          <ColorPicker config={config} onChange={onChange} label="Колір точок" field="dotsColor" />
         </div>
-        <ColorPicker label="Колір фону" field="bgColor" />
+        <ColorPicker config={config} onChange={onChange} label="Колір фону" field="bgColor" />
       </AccordionSection>
 
       {/* 3. Стилізація очей */}
       <AccordionSection title="Стиль Очей (Кутів)" isOpen={openSection === 'eyes'} onClick={() => toggleSection('eyes')}>
         <div style={{ display: 'flex', gap: '1rem' }}>
-          <Select label="Форма рамки" field="cornersSquareType" options={['square', 'dot', 'extra-rounded']} />
-          <ColorPicker label="Колір рамки" field="cornersSquareColor" />
+          <Select config={config} onChange={onChange} label="Форма рамки" field="cornersSquareType" options={['square', 'dot', 'extra-rounded']} />
+          <ColorPicker config={config} onChange={onChange} label="Колір рамки" field="cornersSquareColor" />
         </div>
         <div style={{ display: 'flex', gap: '1rem' }}>
-          <Select label="Форма центру" field="cornersDotType" options={['square', 'dot']} />
-          <ColorPicker label="Колір центру" field="cornersDotColor" />
+          <Select config={config} onChange={onChange} label="Форма центру" field="cornersDotType" options={['square', 'dot']} />
+          <ColorPicker config={config} onChange={onChange} label="Колір центру" field="cornersDotColor" />
         </div>
       </AccordionSection>
 
