@@ -20,7 +20,7 @@ export interface QRConfig {
 
 export default function App() {
   const [config, setConfig] = useState<QRConfig>({
-    value: 'https://github.com/p24user23-dot/qr-code-gen',
+    value: 'https://github.com/xand0dev/qr-code-gen',
     size: 300,
     margin: 10,
     bgColor: '#ffffff',
