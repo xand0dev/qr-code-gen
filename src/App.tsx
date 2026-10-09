@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { InputForm } from './components/InputForm';
 import { QrDisplay } from './components/QrDisplay';
 import './index.css';
+import type { StyleConfig } from './lib/presets';
 
 export interface QRConfig {
   value: string;
@@ -40,6 +41,8 @@ export default function App() {
     setConfig((prev) => ({ ...prev, [field]: val }));
   };
 
+  const applyStyle = (style: StyleConfig) => setConfig((prev) => ({ ...prev, ...style }));
+
   return (
     <div className="app-container">
       <h1 style={{ textAlign: 'center', marginBottom: '2rem' }}>QR CODE GEN</h1>
@@ -47,7 +50,7 @@ export default function App() {
       <main className="main-layout">
         {/* Ліва колонка: Форма налаштувань */}
         <section className="controls">
-          <InputForm config={config} onChange={updateConfig} />
+          <InputForm config={config} onChange={updateConfig} onApplyStyle={applyStyle} />
         </section>
 
         {/* Права колонка: Липкий (sticky) QR-код, щоб не тікав при скролі */}

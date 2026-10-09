@@ -2,11 +2,14 @@ import { useState } from 'react';
 import type { ChangeEvent, ReactNode } from 'react';
 import type { QRConfig } from '../App';
 import type { PayloadKind } from '../lib/payloads';
+import type { StyleConfig } from '../lib/presets';
 import { PayloadForm } from './PayloadForm';
+import { PresetsPanel } from './PresetsPanel';
 
 interface InputFormProps {
   config: QRConfig;
   onChange: <K extends keyof QRConfig>(field: K, val: QRConfig[K]) => void;
+  onApplyStyle?: (style: StyleConfig) => void;
 }
 
 // Внутрішній компонент для секцій акордеону
@@ -77,7 +80,7 @@ const ColorPicker = ({ config, onChange, label, field }: { config: QRConfig, onC
   </div>
 );
 
-export function InputForm({ config, onChange }: InputFormProps) {
+export function InputForm({ config, onChange, onApplyStyle }: InputFormProps) {
   // Стан для контролю відкритої секції (за замовчуванням відкрита перша)
   const [openSection, setOpenSection] = useState<string>('data');
   const [payloadKind, setPayloadKind] = useState<PayloadKind>('text');
@@ -184,6 +187,28 @@ export function InputForm({ config, onChange }: InputFormProps) {
           )}
         </div>
       </AccordionSection>
+
+      {/* 5. Пресети бренду */}
+      {onApplyStyle && (
+        <AccordionSection title="Пресети бренду" isOpen={openSection === 'presets'} onClick={() => toggleSection('presets')}>
+          <PresetsPanel
+            config={{
+              size: config.size,
+              margin: config.margin,
+              bgColor: config.bgColor,
+              dotsColor: config.dotsColor,
+              dotsType: config.dotsType,
+              cornersSquareType: config.cornersSquareType,
+              cornersSquareColor: config.cornersSquareColor,
+              cornersDotType: config.cornersDotType,
+              cornersDotColor: config.cornersDotColor,
+              imageSize: config.imageSize,
+              errorCorrection: config.errorCorrection,
+            }}
+            onApply={onApplyStyle}
+          />
+        </AccordionSection>
+      )}
 
     </div>
   );
