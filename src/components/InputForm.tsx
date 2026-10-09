@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import type { ChangeEvent, ReactNode } from 'react';
 import type { QRConfig } from '../App';
+import type { PayloadKind } from '../lib/payloads';
+import { PayloadForm } from './PayloadForm';
 
 interface InputFormProps {
   config: QRConfig;
@@ -78,6 +80,7 @@ const ColorPicker = ({ config, onChange, label, field }: { config: QRConfig, onC
 export function InputForm({ config, onChange }: InputFormProps) {
   // Стан для контролю відкритої секції (за замовчуванням відкрита перша)
   const [openSection, setOpenSection] = useState<string>('data');
+  const [payloadKind, setPayloadKind] = useState<PayloadKind>('text');
 
   const toggleSection = (section: string) => {
     setOpenSection(prev => prev === section ? '' : section);
@@ -97,15 +100,18 @@ export function InputForm({ config, onChange }: InputFormProps) {
       
       {/* 1. Дані та розміри */}
       <AccordionSection title="Дані та Розміри" isOpen={openSection === 'data'} onClick={() => toggleSection('data')}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <label style={{ fontSize: '0.9rem', color: '#aaa' }}>Текст або URL</label>
-          <input
-            type="text"
-            value={config.value}
-            onChange={(e) => onChange('value', e.target.value)}
-            style={{ padding: '0.8rem', borderRadius: '6px', border: '1px solid #444', backgroundColor: '#1e1e1e', color: '#fff' }}
-          />
-        </div>
+        <PayloadForm kind={payloadKind} onKindChange={setPayloadKind} onChange={(v) => onChange('value', v)} />
+        {payloadKind === 'text' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <label style={{ fontSize: '0.9rem', color: '#aaa' }}>Текст або URL</label>
+            <input
+              type="text"
+              value={config.value}
+              onChange={(e) => onChange('value', e.target.value)}
+              style={{ padding: '0.8rem', borderRadius: '6px', border: '1px solid #444', backgroundColor: '#1e1e1e', color: '#fff' }}
+            />
+          </div>
+        )}
         <div style={{ display: 'flex', gap: '1rem' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
             <label style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', color: '#aaa' }}>
