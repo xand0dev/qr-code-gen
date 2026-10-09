@@ -149,16 +149,30 @@ export function InputForm({ config, onChange }: InputFormProps) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <input type="file" accept="image/*" onChange={handleImageUpload} style={{ color: '#aaa' }} />
           {config.image && (
-            <button 
-              onClick={() => {
-                onChange('image', null);
-                // @ts-expect-error
-                document.querySelector('input[type="file"]').value = '';
-              }}
-              style={{ padding: '0.8rem', background: '#d32f2f', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
-            >
-              Видалити логотип
-            </button>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <label style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', color: '#aaa' }}>
+                <span>Розмір логотипу</span>
+                <span>{config.imageSize.toFixed(2)}</span>
+              </label>
+              <input
+                type="range"
+                min="0.1"
+                max="0.6"
+                step="0.05"
+                value={config.imageSize}
+                onChange={(e) => onChange('imageSize', parseFloat(e.target.value))}
+              />
+              <button
+                onClick={() => {
+                  onChange('image', null);
+                  // @ts-expect-error
+                  document.querySelector('input[type="file"]').value = '';
+                }}
+                style={{ padding: '0.8rem', background: '#d32f2f', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
+              >
+                Видалити логотип
+              </button>
+            </div>
           )}
         </div>
       </AccordionSection>
