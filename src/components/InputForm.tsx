@@ -50,7 +50,7 @@ const AccordionSection = ({
   </div>
 );
 
-const Select = ({ config, onChange, label, field, options }: { config: QRConfig, onChange: (field: keyof QRConfig, val: any) => void, label: string, field: keyof QRConfig, options: string[] }) => (
+const Select = ({ config, onChange, label, field, options }: { config: QRConfig, onChange: InputFormProps['onChange'], label: string, field: keyof QRConfig, options: string[] }) => (
   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
     <label style={{ fontSize: '0.9rem', color: '#aaa' }}>{label}</label>
     <select
@@ -63,7 +63,7 @@ const Select = ({ config, onChange, label, field, options }: { config: QRConfig,
   </div>
 );
 
-const ColorPicker = ({ config, onChange, label, field }: { config: QRConfig, onChange: (field: keyof QRConfig, val: any) => void, label: string, field: keyof QRConfig }) => (
+const ColorPicker = ({ config, onChange, label, field }: { config: QRConfig, onChange: InputFormProps['onChange'], label: string, field: keyof QRConfig }) => (
    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
     <label style={{ fontSize: '0.9rem', color: '#aaa' }}>{label}</label>
     <input
@@ -76,7 +76,7 @@ const ColorPicker = ({ config, onChange, label, field }: { config: QRConfig, onC
 );
 
 export function InputForm({ config, onChange }: InputFormProps) {
-  // Стан для контролю відкритої секції (за замовчиванням відкрита перша)
+  // Стан для контролю відкритої секції (за замовчуванням відкрита перша)
   const [openSection, setOpenSection] = useState<string>('data');
 
   const toggleSection = (section: string) => {
@@ -148,16 +148,30 @@ export function InputForm({ config, onChange }: InputFormProps) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <input type="file" accept="image/*" onChange={handleImageUpload} style={{ color: '#aaa' }} />
           {config.image && (
-            <button 
-              onClick={() => {
-                onChange('image', null);
-                const fileInput = document.querySelector<HTMLInputElement>('input[type="file"]');
-                if (fileInput) fileInput.value = '';
-              }}
-              style={{ padding: '0.8rem', background: '#d32f2f', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
-            >
-              Видалити логотип
-            </button>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <label style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', color: '#aaa' }}>
+                <span>Розмір логотипу</span>
+                <span>{config.imageSize.toFixed(2)}</span>
+              </label>
+              <input
+                type="range"
+                min="0.1"
+                max="0.6"
+                step="0.05"
+                value={config.imageSize}
+                onChange={(e) => onChange('imageSize', parseFloat(e.target.value))}
+              />
+              <button
+                onClick={() => {
+                  onChange('image', null);
+                  const fileInput = document.querySelector<HTMLInputElement>('input[type="file"]');
+                  if (fileInput) fileInput.value = '';
+                }}
+                style={{ padding: '0.8rem', background: '#d32f2f', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
+              >
+                Видалити логотип
+              </button>
+            </div>
           )}
         </div>
       </AccordionSection>
