@@ -143,9 +143,9 @@ export function QrDisplay({ config }: QrDisplayProps) {
             Копіювати PNG
           </button>
         </div>
-        {copyMsg && <div style={{ fontSize: '0.85rem', color: '#333' }}>{copyMsg}</div>}
+        {copyMsg && <div style={{ fontSize: '0.85rem', color: '#cccccc' }}>{copyMsg}</div>}
         {exportOpts.notes.length > 0 && (
-          <div style={{ fontSize: '0.8rem', color: '#666' }}>
+          <div style={{ fontSize: '0.8rem', color: '#aaaaaa' }}>
             {exportOpts.notes.join(', ')}
           </div>
         )}
@@ -168,7 +168,7 @@ export function QrDisplay({ config }: QrDisplayProps) {
               safety.level === 'ok' ? '#4CAF50' : 
               safety.level === 'warn' ? '#ffb300' : '#d32f2f'
           }} />
-          <strong>
+          <strong style={{ color: '#222' }}>
             Безпека сканування: {safety.level === 'ok' ? 'OK' : safety.level === 'warn' ? 'Увага' : 'Ризик'}
           </strong>
         </div>
