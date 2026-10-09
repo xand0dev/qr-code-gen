@@ -69,19 +69,30 @@ export function withUtm(
   let parsedUrl: URL;
   try {
     parsedUrl = new URL(url);
+    if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
+      throw new Error('invalid protocol');
+    }
   } catch {
-    return url;
+    const trimmed = url.trim();
+    if (!trimmed) return url;
+    const withScheme = `https://${trimmed}`;
+    try {
+      parsedUrl = new URL(withScheme);
+      if (!(parsedUrl.hostname.includes('.') || parsedUrl.hostname === 'localhost')) {
+        return url;
+      }
+    } catch {
+      return url;
+    }
   }
 
   const params = new URLSearchParams(parsedUrl.search);
   const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'] as const;
 
-  // Remove existing UTM parameters
   for (const key of utmKeys) {
     params.delete(key);
   }
 
-  // Add new UTM parameters if they have non-empty trimmed values
   if (utm.source?.trim()) params.set('utm_source', utm.source.trim());
   if (utm.medium?.trim()) params.set('utm_medium', utm.medium.trim());
   if (utm.campaign?.trim()) params.set('utm_campaign', utm.campaign.trim());

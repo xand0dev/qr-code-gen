@@ -265,4 +265,34 @@ describe('withUtm', () => {
     });
     expect(result).toBe('https://example.com/?existing=value&utm_source=google&utm_medium=cpc&utm_campaign=summer');
   });
+
+  it('works with bare host and path (example.com/path)', () => {
+    const result = withUtm('example.com/path', { source: 'test' });
+    expect(result).toBe('https://example.com/path?utm_source=test');
+  });
+
+  it('works with bare host without path', () => {
+    const result = withUtm('example.com', { source: 'test' });
+    expect(result).toBe('https://example.com/?utm_source=test');
+  });
+
+  it('works with localhost', () => {
+    const result = withUtm('localhost:3000/path', { source: 'test' });
+    expect(result).toBe('https://localhost:3000/path?utm_source=test');
+  });
+
+  it('returns unchanged for plain text that is not a host', () => {
+    const result = withUtm('not a url', { source: 'test' });
+    expect(result).toBe('not a url');
+  });
+
+  it('returns unchanged for plain text without dots', () => {
+    const result = withUtm('plaintext', { source: 'test' });
+    expect(result).toBe('plaintext');
+  });
+
+  it('returns unchanged for host without dot and not localhost', () => {
+    const result = withUtm('intranet/path', { source: 'test' });
+    expect(result).toBe('intranet/path');
+  });
 });
