@@ -16,6 +16,7 @@ export interface QRConfig {
   cornersDotColor: string;
   image: string | null;
   imageSize: number;
+  errorCorrection: 'L' | 'M' | 'Q' | 'H';
 }
 
 export default function App() {
@@ -32,6 +33,7 @@ export default function App() {
     cornersDotColor: '#000000',
     image: null,
     imageSize: 0.4,
+    errorCorrection: 'Q',
   });
 
   const updateConfig = <K extends keyof QRConfig>(field: K, val: QRConfig[K]) => {

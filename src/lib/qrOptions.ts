@@ -14,5 +14,6 @@ export function toQrOptions(config: QRConfig): Partial<Options> {
     cornersDotOptions: { color: config.cornersDotColor, type: config.cornersDotType },
     image: config.image || undefined,
     imageOptions: { crossOrigin: 'anonymous', margin: 5, imageSize: config.imageSize },
+    qrOptions: { errorCorrectionLevel: config.errorCorrection },
   };
 }

@@ -120,6 +120,9 @@ export function InputForm({ config, onChange }: InputFormProps) {
             <input type="range" min="0" max="50" step="1" value={config.margin} onChange={(e) => onChange('margin', parseInt(e.target.value, 10))} />
           </div>
         </div>
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <Select config={config} onChange={onChange} label="Корекція помилок" field="errorCorrection" options={['L', 'M', 'Q', 'H']} />
+        </div>
       </AccordionSection>
 
       {/* 2. Стилізація тіла */}

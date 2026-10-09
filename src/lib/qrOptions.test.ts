@@ -15,6 +15,7 @@ const base: QRConfig = {
   cornersDotColor: '#222222',
   image: null,
   imageSize: 0.4,
+  errorCorrection: 'Q',
 };
 
 describe('toQrOptions', () => {
@@ -43,5 +44,10 @@ describe('toQrOptions', () => {
     const o = toQrOptions({ ...base, image: 'data:image/png;base64,AAA', imageSize: 0.3 });
     expect(o.image).toBe('data:image/png;base64,AAA');
     expect(o.imageOptions).toEqual({ crossOrigin: 'anonymous', margin: 5, imageSize: 0.3 });
+  });
+
+  it('passes error correction level', () => {
+    expect(toQrOptions(base).qrOptions).toEqual({ errorCorrectionLevel: 'Q' });
+    expect(toQrOptions({ ...base, errorCorrection: 'H' }).qrOptions).toEqual({ errorCorrectionLevel: 'H' });
   });
 });
