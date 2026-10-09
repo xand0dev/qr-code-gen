@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import QRCodeStyling from 'qr-code-styling';
 import type { QRConfig } from '../App';
+import { toQrOptions } from '../lib/qrOptions';
 
 interface QrDisplayProps {
   config: QRConfig;
@@ -28,35 +29,7 @@ export function QrDisplay({ config }: QrDisplayProps) {
 
   // Оновлюємо налаштування при будь-якій зміні config
   useEffect(() => {
-    qrCode.current.update({
-      width: config.size,
-      height: config.size,
-      data: config.value || ' ',
-      margin: config.margin,
-      backgroundOptions: {
-        color: config.bgColor,
-      },
-      // === ОСЬ ЦЬОГО БЛОКУ НЕ ВИСТАЧАЛО ===
-      dotsOptions: {
-        color: config.dotsColor,
-        type: config.dotsType,
-      },
-      cornersSquareOptions: {
-        color: config.cornersSquareColor,
-        type: config.cornersSquareType,
-      },
-      cornersDotOptions: {
-        color: config.cornersDotColor,
-        type: config.cornersDotType,
-      },
-      // ===================================
-      image: config.image || undefined,
-      imageOptions: {
-        crossOrigin: 'anonymous',
-        margin: 5,
-        imageSize: config.imageSize,
-      },
-    });
+    qrCode.current.update(toQrOptions(config));
   }, [config]);
 
   // Вбудовані методи завантаження з бібліотеки
