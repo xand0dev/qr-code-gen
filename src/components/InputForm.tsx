@@ -5,6 +5,7 @@ import type { PayloadKind } from '../lib/payloads';
 import type { StyleConfig } from '../lib/presets';
 import { PayloadForm } from './PayloadForm';
 import { PresetsPanel } from './PresetsPanel';
+import { analyzeUrl, withUtm } from '../lib/urlGuard';
 
 interface InputFormProps {
   config: QRConfig;
@@ -84,6 +85,8 @@ export function InputForm({ config, onChange, onApplyStyle }: InputFormProps) {
   // Стан для контролю відкритої секції (за замовчуванням відкрита перша)
   const [openSection, setOpenSection] = useState<string>('data');
   const [payloadKind, setPayloadKind] = useState<PayloadKind>('text');
+  const [utmOpen, setUtmOpen] = useState(false);
+  const [utm, setUtm] = useState({ source: '', medium: '', campaign: '', term: '', content: '' });
 
   const toggleSection = (section: string) => {
     setOpenSection(prev => prev === section ? '' : section);
@@ -113,6 +116,69 @@ export function InputForm({ config, onChange, onApplyStyle }: InputFormProps) {
               onChange={(e) => onChange('value', e.target.value)}
               style={{ padding: '0.8rem', borderRadius: '6px', border: '1px solid #444', backgroundColor: '#1e1e1e', color: '#fff' }}
             />
+            {analyzeUrl(config.value).warnings.map((w, i) => (
+              <div key={i} style={{ fontSize: '0.85rem', color: '#ffb300' }}>{w}</div>
+            ))}
+            <button
+              onClick={() => setUtmOpen(!utmOpen)}
+              style={{
+                padding: '0.5rem 1rem',
+                background: 'transparent',
+                border: '1px solid #444',
+                borderRadius: '6px',
+                color: '#aaa',
+                fontSize: '0.9rem',
+                cursor: 'pointer',
+                alignSelf: 'flex-start'
+              }}
+            >
+              {utmOpen ? 'Сховати UTM-мітки' : 'UTM-мітки'}
+            </button>
+            {utmOpen && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.5rem' }}>
+                <input
+                  type="text"
+                  placeholder="utm_source"
+                  value={utm.source}
+                  onChange={(e) => setUtm({ ...utm, source: e.target.value })}
+                  style={{ padding: '0.6rem', borderRadius: '6px', border: '1px solid #444', backgroundColor: '#1e1e1e', color: '#fff' }}
+                />
+                <input
+                  type="text"
+                  placeholder="utm_medium"
+                  value={utm.medium}
+                  onChange={(e) => setUtm({ ...utm, medium: e.target.value })}
+                  style={{ padding: '0.6rem', borderRadius: '6px', border: '1px solid #444', backgroundColor: '#1e1e1e', color: '#fff' }}
+                />
+                <input
+                  type="text"
+                  placeholder="utm_campaign"
+                  value={utm.campaign}
+                  onChange={(e) => setUtm({ ...utm, campaign: e.target.value })}
+                  style={{ padding: '0.6rem', borderRadius: '6px', border: '1px solid #444', backgroundColor: '#1e1e1e', color: '#fff' }}
+                />
+                <input
+                  type="text"
+                  placeholder="utm_term"
+                  value={utm.term}
+                  onChange={(e) => setUtm({ ...utm, term: e.target.value })}
+                  style={{ padding: '0.6rem', borderRadius: '6px', border: '1px solid #444', backgroundColor: '#1e1e1e', color: '#fff' }}
+                />
+                <input
+                  type="text"
+                  placeholder="utm_content"
+                  value={utm.content}
+                  onChange={(e) => setUtm({ ...utm, content: e.target.value })}
+                  style={{ padding: '0.6rem', borderRadius: '6px', border: '1px solid #444', backgroundColor: '#1e1e1e', color: '#fff' }}
+                />
+                <button
+                  onClick={() => onChange('value', withUtm(config.value, utm))}
+                  style={{ padding: '0.6rem', background: '#ffb300', color: '#000', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', alignSelf: 'flex-start' }}
+                >
+                  Застосувати UTM
+                </button>
+              </div>
+            )}
           </div>
         )}
         <div style={{ display: 'flex', gap: '1rem' }}>
